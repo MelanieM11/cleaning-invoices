@@ -294,9 +294,8 @@
 
   // ---------- shared header blocks ----------
   function billToRows() {
-    const rows = [['Company:', COMPANY.name], ['Address:', COMPANY.address], ['Phone No:', COMPANY.phone], ['Email:', COMPANY.email]];
-    if (COMPANY.abn) rows.push(['ABN:', COMPANY.abn]);
-    return rows;
+    return [['Company:', COMPANY.name], ['Address:', COMPANY.address], ['Phone No:', COMPANY.phone], ['Email:', COMPANY.email], ['ABN:', COMPANY.abn]]
+      .filter(([, v]) => v);
   }
   function fromRows(inv) {
     const rows = [];

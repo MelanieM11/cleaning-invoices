@@ -23,8 +23,9 @@ subcontractor and making the fortnightly invoice as PDF or Excel.
 There are no company names, prices, rates or client details in this repository. Anyone who
 copies this code gets an empty app with no price list.
 
-- **Price list**: kept in a private file that you load once on your phone (Settings → Price list).
-  Never commit it; `.gitignore` blocks `*price-list*.json` and `*backup*.json`.
+- **Price list**: in Settings → Price list, load your subcontractor agreement (PDF) and the app reads
+  the prices, percentages, extras and company details from it on the phone. You can also load a
+  price list file (.json). Never commit either; `.gitignore` blocks `*price-list*.json` and `*backup*.json`.
 - **Your jobs, name and bank details**: stored only in the phone's browser storage. Nothing is
   sent anywhere.
 - **Backup**: use Settings → Save backup now and then.
@@ -42,4 +43,5 @@ Then open the site in Safari and tap **Share → Add to Home Screen**.
 - `js/app.js`: jobs, billing periods, paste parsing, settings, backup
 - `js/invoice.js`: invoice summary plus Excel and PDF output
 - `sw.js`, `manifest.webmanifest`, `icons/`: home-screen app and offline support
-- `vendor/`: ExcelJS 4.4.0, jsPDF 2.5.1, jspdf-autotable 3.8.2 (MIT licensed)
+- `js/agreement.js`: reads the price list from the agreement PDF
+- `vendor/`: ExcelJS 4.4.0, jsPDF 2.5.1, jspdf-autotable 3.8.2 (MIT), pdf.js 3.11.174 (Apache-2.0)

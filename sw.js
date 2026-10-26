@@ -1,9 +1,10 @@
 // Offline support: cache the app shell and libraries, serve cache first, refresh in background.
-const CACHE = 'cleaning-invoices-v3';
+const CACHE = 'cleaning-invoices-v4';
 const FILES = [
-  './', 'index.html', 'css/style.css', 'js/rates.js', 'js/app.js', 'js/invoice.js',
+  './', 'index.html', 'css/style.css', 'js/rates.js', 'js/app.js', 'js/invoice.js', 'js/agreement.js',
   'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png',
   'vendor/exceljs.min.js', 'vendor/jspdf.umd.min.js', 'vendor/jspdf.plugin.autotable.min.js',
+  'vendor/pdf.min.js', 'vendor/pdf.worker.min.js',
 ];
 
 self.addEventListener('install', (e) => {
