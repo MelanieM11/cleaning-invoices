@@ -468,14 +468,31 @@
     $('#price-list-status').innerHTML = pl
       ? `Loaded: <b>${esc(pl.company?.name || 'price list')}</b> · ${Object.keys(SERVICES).length} services · ` +
         `${pctLabel('regular')} regular, ${pctLabel('sunday')} Sundays, ${pctLabel('holiday')} public holidays (prices excl. GST).`
-      : 'No price list loaded yet. Open the private price-list file you were sent.';
+      : 'No price list loaded yet. Load your subcontractor agreement (PDF) or a price list file.';
   }
   renderPriceListStatus();
   $('#price-list-import').onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     try {
-      const cfg = JSON.parse(await file.text());
+      const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+      let cfg;
+      if (isPdf) {
+        toast('Reading the agreement…');
+        cfg = await readAgreement(file);
+        // Keep contact details the PDF doesn't have (phone, email) from the previous price list.
+        const prev = state.priceList?.company || {};
+        cfg.company = { ...prev, ...Object.fromEntries(Object.entries(cfg.company).filter(([, v]) => v)) };
+        const found = `Found in ${file.name}:\n\n` +
+          `• ${Object.keys(cfg.services).length} services, e.g. ${Object.keys(cfg.services)[0]}: ` +
+          `${cfg.services[Object.keys(cfg.services)[0]].map((p, i) => `${i ? i + ' bed' : 'Studio'} $${p}`).join(', ')}\n` +
+          `• Your share: ${Math.round(cfg.rates.regular * 100)}% regular, ${Math.round(cfg.rates.sunday * 100)}% Sundays, ${Math.round(cfg.rates.holiday * 100)}% public holidays\n` +
+          `• ${cfg.extras.length} extra fees, ${cfg.deductions.length} deductions\n` +
+          `• Company: ${cfg.company.name || '?'}, ABN ${cfg.company.abn || '?'}\n\nUse this price list?`;
+        if (!confirm(found)) return;
+      } else {
+        cfg = JSON.parse(await file.text());
+      }
       if (!isPriceList(cfg)) throw new Error('bad file');
       state.priceList = cfg;
       applyPriceList(cfg);
@@ -488,8 +505,8 @@
       renderPriceListStatus();
       render();
       toast('Price list loaded');
-    } catch {
-      toast('That file is not a price list for this app');
+    } catch (err) {
+      toast(err && err.message && err.message !== 'bad file' ? err.message : 'That file is not a price list or agreement this app can read');
     } finally {
       e.target.value = '';
     }

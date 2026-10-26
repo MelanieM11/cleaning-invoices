@@ -1,3 +1,4 @@
 # Private price lists and backups: never commit these
 *price-list*.json
 *backup*.json
+*.pdf
