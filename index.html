@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>My Cleaning Invoices</title>
+  <meta name="theme-color" content="#156082">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Invoices">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1 id="title">Jobs</h1>
+  </header>
+
+  <main>
+    <!-- JOBS -->
+    <section id="view-jobs" class="view active">
+      <div class="period-switch">
+        <button class="icon-btn" id="prev-period" aria-label="Previous period">‹</button>
+        <div class="period-label">
+          <strong id="jobs-period-label"></strong>
+          <small id="jobs-period-due"></small>
+        </div>
+        <button class="icon-btn" id="next-period" aria-label="Next period">›</button>
+      </div>
+
+      <div class="card total-card">
+        <div>
+          <small>You earn this period</small>
+          <div class="big" id="jobs-total">$0.00</div>
+        </div>
+        <div class="right">
+          <small id="jobs-count">0 jobs</small>
+        </div>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn primary" id="add-job">+ Add job</button>
+        <button class="btn" id="paste-jobs">Paste shifts</button>
+      </div>
+
+      <div id="jobs-list"></div>
+    </section>
+
+    <!-- INVOICE -->
+    <section id="view-invoice" class="view">
+      <div class="period-switch">
+        <button class="icon-btn" id="inv-prev" aria-label="Previous period">‹</button>
+        <div class="period-label">
+          <strong id="inv-period-label"></strong>
+          <small id="inv-period-due"></small>
+        </div>
+        <button class="icon-btn" id="inv-next" aria-label="Next period">›</button>
+      </div>
+
+      <div class="card">
+        <label class="field inline">
+          <span>Invoice No.</span>
+          <input id="inv-number" inputmode="text">
+        </label>
+        <div id="inv-summary"></div>
+      </div>
+
+      <div id="inv-warnings"></div>
+
+      <div class="stack">
+        <button class="btn primary" id="share-pdf">Share PDF (WhatsApp / Email)</button>
+        <button class="btn primary outline" id="share-xlsx">Share Excel</button>
+        <div class="actions-row">
+          <button class="btn" id="dl-pdf">Download PDF</button>
+          <button class="btn" id="dl-xlsx">Download Excel</button>
+        </div>
+        <a class="btn" id="email-link" href="#">Open email to accounts</a>
+      </div>
+      <p class="hint">Send by the due date shown above. On iPhone, "Share" lets you pick Mail or WhatsApp and attaches the file for you.</p>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="view-settings" class="view">
+      <form id="settings-form" class="card">
+        <h2>Your details</h2>
+        <label class="field"><span>Full name</span><input name="name" autocomplete="name"></label>
+        <label class="field"><span>Phone</span><input name="phone" type="tel" autocomplete="tel"></label>
+        <label class="field"><span>Email</span><input name="email" type="email" autocomplete="email"></label>
+        <label class="field"><span>Business name (the ABN holder, if not you)</span><input name="businessName" autocomplete="organization"></label>
+        <label class="field"><span>ABN</span><input name="abn" inputmode="numeric"></label>
+        <label class="check"><input type="checkbox" name="gstRegistered"><span>This ABN is registered for GST: add 10% GST and make it a Tax Invoice</span></label>
+
+        <h2>Bank details</h2>
+        <label class="field"><span>Account name</span><input name="accountName"></label>
+        <label class="field"><span>Bank</span><input name="bank"></label>
+        <label class="field"><span>BSB</span><input name="bsb" inputmode="numeric"></label>
+        <label class="field"><span>Account number</span><input name="accountNumber" inputmode="numeric"></label>
+
+        <h2>Invoices</h2>
+        <label class="field"><span>Send invoices to</span><input name="invoiceEmail" type="email"></label>
+        <label class="field"><span>Invoice number prefix</span><input name="invoicePrefix" placeholder="e.g. MM-"></label>
+        <label class="field"><span>Next invoice number</span><input name="nextInvoiceNo" type="number" min="1"></label>
+        <label class="field"><span>Dates in pasted shifts are written as</span>
+          <select name="dateOrder">
+            <option value="MDY">Month/Day/Year (10/27/26)</option>
+            <option value="DMY">Day/Month/Year (27/10/26)</option>
+          </select>
+        </label>
+        <p class="hint">Saved automatically on this phone only. Nothing is sent anywhere.</p>
+      </form>
+
+      <div class="card">
+        <h2>Backup</h2>
+        <p class="hint">Your jobs live on this phone. Make a backup now and then (or before changing phones).</p>
+        <div class="actions-row">
+          <button class="btn" id="backup-export">Save backup</button>
+          <label class="btn" for="backup-import">Restore backup</label>
+          <input type="file" id="backup-import" accept="application/json,.json" hidden>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Price list</h2>
+        <p class="hint" id="price-list-status"></p>
+        <label class="btn" for="price-list-import">Load price list file</label>
+        <input type="file" id="price-list-import" accept="application/json,.json" hidden>
+        <p class="hint">Your prices and percentages are kept on this phone only. You can still change the company charge on any job.</p>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabbar">
+    <button data-view="jobs" class="active"><span class="ti">🧹</span>Jobs</button>
+    <button data-view="invoice"><span class="ti">🧾</span>Invoice</button>
+    <button data-view="settings"><span class="ti">⚙️</span>Settings</button>
+  </nav>
+
+  <!-- JOB SHEET -->
+  <dialog id="job-dialog" class="sheet">
+    <form id="job-form" method="dialog">
+      <div class="sheet-head">
+        <button type="button" class="link" data-close>Cancel</button>
+        <strong id="job-dialog-title">Add job</strong>
+        <button type="submit" class="link strong">Save</button>
+      </div>
+
+      <div class="seg" id="kind-seg" role="radiogroup">
+        <label><input type="radio" name="kind" value="clean" checked><span>Clean</span></label>
+        <label><input type="radio" name="kind" value="extra"><span>Extra</span></label>
+        <label><input type="radio" name="kind" value="fixed"><span>Fixed $</span></label>
+        <label><input type="radio" name="kind" value="deduction"><span>Deduction</span></label>
+      </div>
+
+      <label class="field"><span>Date</span><input name="date" type="date" required></label>
+      <label class="field"><span>Property address</span>
+        <input name="address" list="address-list" autocomplete="off" placeholder="Start typing — past properties appear">
+        <datalist id="address-list"></datalist>
+      </label>
+
+      <div data-for="clean">
+        <div class="two">
+          <label class="field"><span>Service</span>
+            <select name="service"></select>
+          </label>
+          <label class="field"><span>Bedrooms</span>
+            <select name="bedrooms">
+              <option value="0">Studio</option><option value="1">1</option><option value="2">2</option>
+              <option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option>
+            </select>
+          </label>
+        </div>
+        <label class="field"><span>Day rate</span>
+          <select name="dayType">
+            <option value="auto">Automatic (from date)</option>
+            <option value="regular">Regular day</option>
+            <option value="sunday">Sunday</option>
+            <option value="holiday">Public holiday</option>
+          </select>
+        </label>
+      </div>
+
+      <div data-for="extra deduction">
+        <label class="field"><span>Type</span>
+          <select name="preset"></select>
+        </label>
+      </div>
+
+      <div class="two">
+        <label class="field" data-for="clean extra"><span>Company charge $</span>
+          <input name="price" type="number" step="0.01" min="0" inputmode="decimal">
+        </label>
+        <label class="field" data-for="extra"><span>Your %</span>
+          <input name="percent" type="number" step="1" min="0" max="100" inputmode="numeric" value="100">
+        </label>
+        <label class="field" data-for="fixed deduction"><span>Amount $</span>
+          <input name="amount" type="number" step="0.01" min="0" inputmode="decimal">
+        </label>
+      </div>
+
+      <label class="field"><span>Description</span><input name="description" placeholder="e.g. Departure clean, linen & amenities"></label>
+      <label class="field"><span>Comments</span><input name="comments"></label>
+
+      <div class="earn" id="job-earn"></div>
+      <button type="button" class="btn danger" id="delete-job" hidden>Delete job</button>
+    </form>
+  </dialog>
+
+  <!-- PASTE SHEET -->
+  <dialog id="paste-dialog" class="sheet">
+    <div class="sheet-head">
+      <button type="button" class="link" data-close>Cancel</button>
+      <strong>Paste shifts</strong>
+      <button type="button" class="link strong" id="paste-add">Add</button>
+    </div>
+    <p class="hint">Copy the rows from your shift schedule (date, shift title, address, bedrooms) and paste them here. Check the preview, then tap Add.</p>
+    <textarea id="paste-text" rows="6" placeholder="10/27/26  10:30 AM  2:00 PM  Departure Clean, Linen & Amenities  AirBnb  1/23 Example St, Suburb NSW 2000  2 Bedroom/s & 1 Bathroom/s"></textarea>
+    <div id="paste-preview"></div>
+  </dialog>
+
+  <div id="toast" role="status"></div>
+
+  <script src="js/rates.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/invoice.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
