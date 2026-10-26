@@ -10,9 +10,10 @@
       name: '', phone: '', email: '', abn: '',
       accountName: '', bank: '', bsb: '', accountNumber: '',
       invoiceEmail: '', invoicePrefix: '', nextInvoiceNo: 1,
-      dateOrder: 'MDY', businessName: '', gstRegistered: false,
+      dateOrder: 'MDY', businessName: '', gstRegistered: false, gstBasis: 'cash',
     },
     jobs: [],
+    expenses: [],
     invoiceNumbers: {},
     priceList: null,
   });
@@ -126,7 +127,7 @@
 
   // ---------- navigation ----------
   let period = periodOf(iso(new Date()));
-  const titles = { jobs: 'Jobs', invoice: 'Invoice', settings: 'Settings' };
+  const titles = { jobs: 'Jobs', invoice: 'Invoice', expenses: 'Expenses & BAS', settings: 'Settings' };
   let currentView = 'jobs';
 
   function showView(name) {
@@ -150,6 +151,7 @@
     renderPeriodHeader('#inv-period-label', '#inv-period-due');
     if (currentView === 'jobs') renderJobs();
     if (currentView === 'invoice') renderInvoice();
+    if (currentView === 'expenses') App.renderExpenses();
   }
 
   function renderPeriodHeader(labelSel, dueSel) {
@@ -539,6 +541,7 @@
     get period() { return period; },
     render,
     renderInvoice: () => {},
+    renderExpenses: () => {},
   };
   function renderInvoice() { App.renderInvoice(); }
 

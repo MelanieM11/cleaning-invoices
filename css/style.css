@@ -119,6 +119,7 @@ h2:first-child { margin-top: 0; }
 .sum-row:last-child { border-bottom: 0; }
 .sum-row.total { font-weight: 750; font-size: 18px; color: var(--brand); border-top: 2px solid var(--brand); margin-top: 4px; padding-top: 10px; }
 .sum-row .lbl { color: var(--muted); }
+.sum-row .code { display: inline-block; min-width: 2.2em; color: var(--brand); }
 .warn { background: var(--warn-bg); color: var(--warn-text); border-radius: 12px; padding: 10px 12px; font-size: 14px; margin-bottom: 10px; }
 
 /* forms */

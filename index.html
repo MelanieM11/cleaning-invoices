@@ -82,6 +82,30 @@
       <p class="hint">Send by the due date shown above. On iPhone, "Share" lets you pick Mail or WhatsApp and attaches the file for you.</p>
     </section>
 
+    <!-- EXPENSES & BAS -->
+    <section id="view-expenses" class="view">
+      <div class="period-switch">
+        <button class="icon-btn" id="exp-prev" aria-label="Previous quarter">‹</button>
+        <div class="period-label">
+          <strong id="exp-quarter-label"></strong>
+          <small id="exp-quarter-due"></small>
+        </div>
+        <button class="icon-btn" id="exp-next" aria-label="Next quarter">›</button>
+      </div>
+
+      <div class="card">
+        <h2>BAS – cleaning</h2>
+        <div id="bas-summary"></div>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn primary" id="add-expense">+ Add expense</button>
+        <button class="btn" id="exp-download">Share Excel</button>
+      </div>
+
+      <div id="expenses-list"></div>
+    </section>
+
     <!-- SETTINGS -->
     <section id="view-settings" class="view">
       <div class="card">
@@ -99,6 +123,12 @@
         <label class="field"><span>Business name (the ABN holder, if not you)</span><input name="businessName" autocomplete="organization"></label>
         <label class="field"><span>ABN</span><input name="abn" inputmode="numeric"></label>
         <label class="check"><input type="checkbox" name="gstRegistered"><span>This ABN is registered for GST: add 10% GST and make it a Tax Invoice</span></label>
+        <label class="field"><span>GST reporting for the BAS</span>
+          <select name="gstBasis">
+            <option value="cash">Cash – when you get paid (most small businesses)</option>
+            <option value="accrual">Accrual – when you invoice</option>
+          </select>
+        </label>
 
         <h2>Bank details</h2>
         <label class="field"><span>Account name</span><input name="accountName"></label>
@@ -135,6 +165,7 @@
   <nav class="tabbar">
     <button data-view="jobs" class="active"><span class="ti">🧹</span>Jobs</button>
     <button data-view="invoice"><span class="ti">🧾</span>Invoice</button>
+    <button data-view="expenses"><span class="ti">💳</span>Expenses</button>
     <button data-view="settings"><span class="ti">⚙️</span>Settings</button>
   </nav>
 
@@ -208,6 +239,28 @@
     </form>
   </dialog>
 
+  <!-- EXPENSE SHEET -->
+  <dialog id="expense-dialog" class="sheet">
+    <form id="expense-form" method="dialog">
+      <div class="sheet-head">
+        <button type="button" class="link" data-close>Cancel</button>
+        <strong id="expense-dialog-title">Add expense</strong>
+        <button type="submit" class="link strong">Save</button>
+      </div>
+      <label class="field"><span>Date</span><input name="date" type="date" required></label>
+      <label class="field"><span>Supplier / item</span><input name="supplier" placeholder="e.g. Bunnings – mop and bucket"></label>
+      <div class="two">
+        <label class="field"><span>Category</span><select name="category"></select></label>
+        <label class="field"><span>Amount paid $</span><input name="amount" type="number" step="0.01" min="0" inputmode="decimal" required></label>
+      </div>
+      <label class="check"><input type="checkbox" name="includesGst" checked><span>The price includes GST (check the receipt)</span></label>
+      <label class="field"><span>Business use %</span><input name="businessPct" type="number" min="0" max="100" step="1" inputmode="numeric" value="100"></label>
+      <label class="field"><span>Notes</span><input name="notes"></label>
+      <div class="earn" id="expense-credit"></div>
+      <button type="button" class="btn danger" id="delete-expense" hidden>Delete expense</button>
+    </form>
+  </dialog>
+
   <!-- PASTE SHEET -->
   <dialog id="paste-dialog" class="sheet">
     <div class="sheet-head">
@@ -226,6 +279,7 @@
   <script src="js/app.js"></script>
   <script src="js/invoice.js"></script>
   <script src="js/agreement.js"></script>
+  <script src="js/expenses.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').catch(() => {});
