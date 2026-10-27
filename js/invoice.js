@@ -88,6 +88,7 @@
     }));
   }
   const loadExcel = () => loadScript('vendor/exceljs.min.js');
+  A.loadExcel = loadExcel;
   const loadPdf = () => loadScript('vendor/jspdf.umd.min.js').then(() => loadScript('vendor/jspdf.plugin.autotable.min.js'));
   function preload() { loadExcel().catch(() => {}); loadPdf().catch(() => {}); }
 
@@ -471,6 +472,8 @@
   $('#share-xlsx').onclick = () => run('xlsx', true);
   $('#dl-pdf').onclick = () => run('pdf', false);
   $('#dl-xlsx').onclick = () => run('xlsx', false);
+
+  A.buildInvoice = build;
 
   // exposed for testing
   A.makeXlsx = (p = A.period) => makeXlsx(build(p));

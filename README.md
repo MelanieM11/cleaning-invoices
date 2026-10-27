@@ -16,6 +16,8 @@ subcontractor and making the fortnightly invoice as PDF or Excel.
   and makes the invoice as **PDF** or **Excel**. "Share" opens the phone's share sheet (Mail,
   WhatsApp…).
 - If your ABN is registered for GST, it adds 10% GST and labels the invoice a Tax Invoice.
+- **Expenses tab**: log work expenses (GST and business-use % included) and see the quarter's
+  BAS figures for this work: G1, 1A and 1B. Share them as an Excel file for your records.
 - Works offline.
 
 ## Privacy
@@ -44,4 +46,5 @@ Then open the site in Safari and tap **Share → Add to Home Screen**.
 - `js/invoice.js`: invoice summary plus Excel and PDF output
 - `sw.js`, `manifest.webmanifest`, `icons/`: home-screen app and offline support
 - `js/agreement.js`: reads the price list from the agreement PDF
+- `js/expenses.js`: expenses and the quarterly BAS summary
 - `vendor/`: ExcelJS 4.4.0, jsPDF 2.5.1, jspdf-autotable 3.8.2 (MIT), pdf.js 3.11.174 (Apache-2.0)
