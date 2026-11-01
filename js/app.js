@@ -1,6 +1,7 @@
 /* Cleaning invoice app: jobs, periods, settings. Data stays in localStorage on this device. */
 (() => {
   const KEY = 'acu-invoices-v1';
+  const APP_VERSION = 7; // shown in Settings so you can tell which version is running
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
@@ -582,5 +583,6 @@
   };
   function renderInvoice() { App.renderInvoice(); }
 
+  $('#app-version').textContent = `App version ${APP_VERSION}`;
   render();
 })();
