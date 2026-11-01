@@ -1,5 +1,5 @@
 // Offline support: cache the app shell and libraries, serve cache first, refresh in background.
-const CACHE = 'cleaning-invoices-v5';
+const CACHE = 'cleaning-invoices-v6';
 const FILES = [
   './', 'index.html', 'css/style.css', 'js/rates.js', 'js/app.js', 'js/invoice.js', 'js/agreement.js', 'js/expenses.js',
   'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png',
