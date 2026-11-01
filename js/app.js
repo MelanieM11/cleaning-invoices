@@ -118,6 +118,7 @@
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   function dueText(p) {
+    if (p.custom) return 'Your own dates · send when ready';
     const today = iso(new Date());
     if (today < p.start) return 'Upcoming period';
     if (today <= p.end) return `In progress · invoice due ${fmtDate(p.due, { day: 'numeric', month: 'short' })}`;
@@ -127,6 +128,19 @@
 
   // ---------- navigation ----------
   let period = periodOf(iso(new Date()));
+  // Optional custom date range for the invoice (e.g. one final invoice across two periods).
+  let customRange = null;
+  function customPeriod(start, end) {
+    const s = parseISO(start), e = parseISO(end);
+    const sameYear = s.getFullYear() === e.getFullYear();
+    const lbl = (d, y) => d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', ...(y ? { year: 'numeric' } : {}) });
+    const label = `${lbl(s, !sameYear)} – ${lbl(e, true)}`;
+    return {
+      custom: true, key: `custom:${start}:${end}`, start, end, due: end, pay: end,
+      label, short: label.replace(/\s*–\s*/, '-'),
+    };
+  }
+  const invoicePeriod = () => (customRange ? customPeriod(customRange.start, customRange.end) : period);
   const titles = { jobs: 'Jobs', invoice: 'Invoice', expenses: 'Expenses & BAS', settings: 'Settings' };
   let currentView = 'jobs';
 
@@ -146,20 +160,43 @@
   $('#inv-prev').onclick = () => step(-1);
   $('#inv-next').onclick = () => step(1);
 
+  $('#custom-range').onchange = (e) => {
+    if (e.target.checked) {
+      const today = iso(new Date());
+      customRange = { start: period.start, end: today > period.start ? today : period.end };
+      $('#custom-from').value = customRange.start;
+      $('#custom-to').value = customRange.end;
+    } else {
+      customRange = null;
+    }
+    $('#custom-range-fields').hidden = !customRange;
+    render();
+  };
+  const onRangeInput = () => {
+    let start = $('#custom-from').value, end = $('#custom-to').value;
+    if (!start || !end) return;
+    if (end < start) [start, end] = [end, start];
+    customRange = { start, end };
+    render();
+  };
+  $('#custom-from').onchange = onRangeInput;
+  $('#custom-to').onchange = onRangeInput;
+
   function render() {
-    renderPeriodHeader('#jobs-period-label', '#jobs-period-due');
-    renderPeriodHeader('#inv-period-label', '#inv-period-due');
+    renderPeriodHeader('#jobs-period-label', '#jobs-period-due', period);
+    renderPeriodHeader('#inv-period-label', '#inv-period-due', invoicePeriod());
+    $('#inv-prev').hidden = $('#inv-next').hidden = !!customRange;
     if (currentView === 'jobs') renderJobs();
     if (currentView === 'invoice') renderInvoice();
     if (currentView === 'expenses') App.renderExpenses();
   }
 
-  function renderPeriodHeader(labelSel, dueSel) {
-    $(labelSel).textContent = period.label;
+  function renderPeriodHeader(labelSel, dueSel, p) {
+    $(labelSel).textContent = p.label;
     const due = $(dueSel);
-    due.textContent = dueText(period);
+    due.textContent = dueText(p);
     const today = iso(new Date());
-    due.classList.toggle('urgent', today > period.end && today <= period.due);
+    due.classList.toggle('urgent', !p.custom && today > p.end && today <= p.due);
   }
 
   // ---------- jobs view ----------
@@ -538,7 +575,7 @@
   window.App = {
     state, save, toast, money, fmtDate, iso, parseISO, round2, esc,
     periodOf, jobsIn, earn, dayTypeOf, invoiceNumberFor, bedLabel,
-    get period() { return period; },
+    get period() { return invoicePeriod(); },
     render,
     renderInvoice: () => {},
     renderExpenses: () => {},
